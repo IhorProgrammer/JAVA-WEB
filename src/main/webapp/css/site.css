@@ -1,0 +1,6 @@
+.card-image{
+    flex: 1 !important;
+}
+.card-stacked{
+    flex: 3 !important;
+}
