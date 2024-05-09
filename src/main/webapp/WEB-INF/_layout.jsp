@@ -23,8 +23,9 @@
                 <a href="<%=context%>/" class="brand-logo">Logo</a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     <li><a href="<%=context%>/cart"><i class="material-icons">shopping_cart</i></a></li>
-                    <li><a href="badges.html">Components</a></li>
-                    <li><a href="collapsible.html">JavaScript</a></li>
+                    <li><a href="<%=context%>/add_product">Додати продукт</a></li>
+                    <li><a href="<%=context%>/promotional">Акційні пропозиції</a></li>
+                    <li><a href="<%=context%>/signup"><i class="material-icons">person_add</i></a></li>
                 </ul>
             </div>
         </nav>

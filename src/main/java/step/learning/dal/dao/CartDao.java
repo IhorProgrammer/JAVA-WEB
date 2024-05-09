@@ -1,7 +1,5 @@
 package step.learning.dal.dao;
-
 import step.learning.dal.dto.CartItem;
-
 import java.util.UUID;
 
 public class CartDao {
