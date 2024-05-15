@@ -5,6 +5,7 @@
         pageBody = "home";
     }
     String bodyFile = "/WEB-INF/" + pageBody + ".jsp";
+
     String context = request.getContextPath();
 %>
 <html>
