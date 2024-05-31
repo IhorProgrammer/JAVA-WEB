@@ -1,3 +1,8 @@
+import ValidationClass from "./validation/ValidationClass.js";
+
+
+var modal;
+
 document.addEventListener( 'DOMContentLoaded', () => {
     // шукаємо кнопку реєстрації, якщо знаходимо - додаємо обробник
     const signupButton = document.getElementById("signup-button");
@@ -8,21 +13,38 @@ document.addEventListener( 'DOMContentLoaded', () => {
     const authButton = document.getElementById("auth-button");
     if(authButton) { authButton.onclick = authButtonClick; }
     // налаштування модальних вікон
-    var elems = document.querySelectorAll('.modal');
-    M.Modal.init(elems, {
-        "opacity": 	    	0.5, 	// Opacity of the modal overlay.
-        "inDuration": 		250, 	// Transition in duration in milliseconds.
-        "outDuration": 		250, 	// Transition out duration in milliseconds.
-        "onOpenStart": 		null,	// Callback function called before modal is opened.
-        "onOpenEnd": 		null,	// Callback function called after modal is opened.
-        "onCloseStart":		null,	// Callback function called before modal is closed.
-        "onCloseEnd": 		null,	// Callback function called after modal is closed.
-        "preventScrolling": true,	// Prevent page from scrolling while modal is open.
-        "dismissible": 		true,	// Allow modal to be dismissed by keyboard or overlay click.
-        "startingTop": 		'4%',	// Starting top offset
-        "endingTop": 		'10%'	// Ending top offset
-    });
+    var modalElement = document.querySelectorAll('.modal');
+    if( modalElement != null) {
+        modal = M.Modal.init(modalElement, {
+            "opacity": 	    	0.5, 	// Opacity of the modal overlay.
+            "inDuration": 		250, 	// Transition in duration in milliseconds.
+            "outDuration": 		250, 	// Transition out duration in milliseconds.
+            "preventScrolling": true,	// Prevent page from scrolling while modal is open.
+            "dismissible": 		true,	// Allow modal to be dismissed by keyboard or overlay click.
+            "startingTop": 		'4%',	// Starting top offset
+            "endingTop": 		'10%'	// Ending top offset
+        });
+
+    }
 });
+
+function openModal( head, content, buttonOKFunction ) {
+    if( !modal && modal.length > 0 ) return;
+    const modalElement = document.querySelector('.modal');
+    const headElement = modalElement.querySelector(".head");
+    const contentElement = modalElement.querySelector(".content");
+    const buttonOk = document.getElementById("modal1_button_ok");
+    const clickHeadler = (e) => {
+        buttonOKFunction(e);
+        buttonOk.removeEventListener(clickHeadler);
+    }
+    buttonOk.addEventListener("click", clickHeadler)
+
+    headElement.innerText = head;
+    contentElement.innerText = content;
+    modal[0].open();
+}
+
 
 function authButtonClick(e) {
     const emailInput = document.querySelector('input[name="auth-email"]');
@@ -44,6 +66,12 @@ function signupButtonClick(e) {
     if( ! signupForm ) {
         throw "Signup form not found" ;
     }
+    const invalidText = document.getElementById("invalid_text");
+    if( ! invalidText ) {
+        throw "#invalid_text not found" ;
+    }
+    invalidText.textContent = "";
+
     // всередині форми signupForm знаходимо елементи
     const nameInput = signupForm.querySelector('input[name="user-name"]');
     if( ! nameInput ) { throw "nameInput not found" ; }
@@ -56,20 +84,15 @@ function signupButtonClick(e) {
     const avatarInput = signupForm.querySelector('input[name="user-avatar"]');
     if( ! avatarInput ) { throw "avatarInput not found" ; }
 
-    /// Валідація даних
-    let isFormValid = true ;
 
-    if( nameInput.value == "" ) {
-        nameInput.classList.remove("valid");
-        nameInput.classList.add("invalid");
-        isFormValid = false ;
-    }
-    else {
-        nameInput.classList.remove("invalid");
-        nameInput.classList.add("valid");
-    }
 
-    if( ! isFormValid ) return ;
+    const vl = new ValidationClass()
+    const [isFormValid, message] = vl.validationData( nameInput, emailInput, passwordInput, repeatInput, avatarInput );
+
+    if( ! isFormValid ) {
+        invalidText.textContent = "* " + message;
+        return;
+    }
     /// кінець валідації
 
     // формуємо дані для передачі на бекенд
@@ -85,15 +108,20 @@ function signupButtonClick(e) {
     fetch( window.location.href, { method: 'POST', body: formData } )
         .then( r => r.json() )
         .then( j => {
-            console.log(j);
-            // if( j.status == 1 ) {  // реєстрація успішна
-            //     alert( 'реєстрація успішна' ) ;
-            //     window.location = '/' ;  // переходимо на головну сторінку
-            // }
-            // else {  // помилка реєстрації (повідомлення - у полі message)
-            //     alert( j.data.message ) ;
-            // }
-        } ) ;
+            if ( j != null ) {
+                if( j.meta.status == "success" ) {
+                    openModal( "Реєстрація", "Реєстрація пройшла успішно", () => {
+                        window.location.href = ".";
+                    } );
+                }
+                else  {
+                    invalidText.textContent = "* " + j.meta.message;
+                    passwordInput.value = "";
+                    repeatInput.value = "";
+                    return;
+                }
+            }
+        }) ;
 }
 
 

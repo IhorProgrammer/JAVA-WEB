@@ -53,5 +53,8 @@
                 <button type="button" id="signup-button" class="btn orange right"><i class="material-icons left">task_alt</i>Реєстрація</button>
             </div>
         </div>
+        <p id="invalid_text" class="row red-text">
+
+        </p>
     </form>
 </div>

@@ -4,3 +4,7 @@
 .card-stacked{
     flex: 3 !important;
 }
+
+.red-text {
+    color: red !important;
+}
