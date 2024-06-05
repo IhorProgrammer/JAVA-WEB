@@ -8,6 +8,7 @@ public class RouterModule extends ServletModule {
     protected void configureServlets() {
         serve("/").with( HomeServlet.class );
         serve("/signup").with( SignupServlet.class );
+        serve("/auth").with( AuthServlet.class );
         serve("/promotional").with( PromotionalServlet.class );
         serve("/cart").with( CartServlet.class );
         serve("/add_product").with( AddProductServlet.class );

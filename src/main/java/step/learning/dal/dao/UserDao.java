@@ -6,6 +6,7 @@ import step.learning.dal.dto.User;
 import step.learning.services.db.DBService;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
@@ -17,6 +18,42 @@ public class UserDao {
     @Inject
     public UserDao(DBService dbService) {
         this.dbService = dbService;
+    }
+
+    public User getUserByToken ( String token ) {
+        String sql = "SELECT u.*, t.* FROM Tokens as t JOIN Users as u ON t.user_id = u.user_id WHERE t.token_id = ? AND t.token_expires > CURRENT_TIMESTAMP LIMIT 1";
+        try ( PreparedStatement prep = dbService.getConnection().prepareStatement( sql )) {
+            prep.setString(1, token);
+            ResultSet resultSet = prep.executeQuery();
+            if( resultSet.next() ) {
+                return User.fromResultSet( resultSet );
+            }
+        } catch ( SQLException ex ) {
+            System.err.print("Error UserDao:getUserByToken: ");
+            System.err.println(ex.getMessage());
+        } catch ( Exception ex ) {
+            System.err.print("Error UserDao:getUserByToken: ");
+            System.err.println(ex.getMessage());
+        }
+        return null;
+    }
+
+    public User getUserByEmail( String email ) {
+        String sql = "SELECT u.* FROM Users as u WHERE u.user_email = ?";
+        try ( PreparedStatement prep = dbService.getConnection().prepareStatement( sql )) {
+            prep.setString(1, email);
+            ResultSet resultSet = prep.executeQuery();
+            if( resultSet.next() ) {
+                return User.fromResultSet( resultSet );
+            }
+        } catch ( SQLException ex ) {
+            System.err.print("Error UserDao:getUserByEmail: ");
+            System.err.println(ex.getMessage());
+        } catch ( Exception ex ) {
+            System.err.print("Error UserDao:getUserByEmail: ");
+            System.err.println(ex.getMessage());
+        }
+        return null;
     }
 
     public boolean installTable() {
@@ -42,7 +79,6 @@ public class UserDao {
             return false;
         }
     }
-
 
     public boolean registerUser ( User user ) {
         if( user == null ) return false ;

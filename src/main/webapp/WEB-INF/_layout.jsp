@@ -12,7 +12,7 @@
 <head>
     <title><%=pageBody%></title>
     <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="<%=context%>/js/lib/materialize/materialize.css">
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="<%=context%>/css/site.css" rel="stylesheet">
@@ -26,6 +26,7 @@
                     <li><a href="<%=context%>/cart"><i class="material-icons">shopping_cart</i></a></li>
                     <li><a href="<%=context%>/add_product">Додати продукт</a></li>
                     <li><a href="<%=context%>/promotional">Акційні пропозиції</a></li>
+                    <li><a href="#auth-modal" class="modal-trigger"><i class="material-icons">key</i></a></li>
                     <li><a href="<%=context%>/signup"><i class="material-icons">person_add</i></a></li>
                 </ul>
             </div>
@@ -60,9 +61,6 @@
         </div>
     </footer>
 
-    <!-- Modal Trigger -->
-    <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Modal</a>
-
     <!-- Modal Structure -->
     <div id="modal1" class="modal">
         <div class="modal-content">
@@ -74,8 +72,31 @@
         </div>
     </div>
 
+    <!-- Modal Structure -->
+    <div id="auth-modal" class="modal">
+        <div class="col s12">
+            <div class="modal-content">
+                <h4>Введіть e-mail та пароль для входу</h4>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">email</i>
+                    <input id="user-input-email" type="text" class="validate" name="auth-email">
+                    <label for="user-input-email">Email</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">lock</i>
+                    <input id="user-input-password" type="password" class="validate" name="auth-password">
+                    <label for="user-input-password">Password</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close btn-flat grey">Закрити</button>
+                <button class="btn-flat deep-purple darken-1" style="margin-left:15px" id="auth-button">Вхід</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="<%=context%>/js/lib/materialize/materialize.js"></script>
     <script type="module" src="<%=context%>/js/site.js"></script>
 </body>
 

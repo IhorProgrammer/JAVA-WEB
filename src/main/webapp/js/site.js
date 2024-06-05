@@ -26,7 +26,14 @@ document.addEventListener( 'DOMContentLoaded', () => {
         });
 
     }
+
+    checkAuth();
 });
+
+
+function getContext() {
+    return window.location.pathname.split("/")[1]
+}
 
 function openModal( head, content, buttonOKFunction ) {
     if( !modal && modal.length > 0 ) return;
@@ -45,20 +52,6 @@ function openModal( head, content, buttonOKFunction ) {
     modal[0].open();
 }
 
-
-function authButtonClick(e) {
-    const emailInput = document.querySelector('input[name="auth-email"]');
-    if( ! emailInput ) { throw "'auth-email' not found" ; }
-    const passwordInput = document.querySelector('input[name="auth-password"]');
-    if( ! passwordInput ) { throw "'auth-password' not found" ; }
-
-    // console.log( emailInput.value, passwordInput.value ) ;
-    fetch(`/auth?email=${emailInput.value}&password=${passwordInput.value}`, {
-        method: 'PATCH'
-    })
-        .then( r => r.json() )
-        .then( console.log ) ;
-}
 
 function signupButtonClick(e) {
     // шукаємо форму - батьківській елемент кнопки (e.target)
@@ -170,4 +163,40 @@ function validateInput(input, isValidate) {
     input.classList.remove("valid");
     input.classList.add("invalid");
     return false;
+}
+
+
+function authButtonClick(e) {
+    const emailInput = document.querySelector('input[name="auth-email"]');
+    if( ! emailInput ) { throw "'auth-email' not found" ; }
+    const passwordInput = document.querySelector('input[name="auth-password"]');
+    if( ! passwordInput ) { throw "'auth-password' not found" ; }
+
+    fetch(
+        `/${getContext()}/auth?email=${emailInput.value}&password=${passwordInput.value}`,
+        {    method: 'GET'    }
+    )
+        .then( r => r.json() )
+        .then( j => {
+            if( j.data == null || typeof  j.data.token == "undefined") {
+                // пишимо що у нас прийшла помилка
+                console.log( j );
+            }
+            else {
+                localStorage.setItem("auth-token", j.data.token );
+                window.location.reload();
+            }
+        } ) ;
+}
+
+function checkAuth() {
+    const authTokem = localStorage.getItem("auth-token");
+    if ( authTokem ) {
+        fetch(
+            `/${getContext()}/auth?token=${authTokem}`,
+            {    method: 'POST'    }
+        )
+            .then( r => r.json() )
+            .then( console.log ) ;
+    }
 }
