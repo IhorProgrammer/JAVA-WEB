@@ -210,10 +210,10 @@ function authButtonClick(e) {
 }
 
 function checkAuth() {
-    const authTokem = localStorage.getItem("auth-token");
-    if ( authTokem ) {
+    const authToken = localStorage.getItem("auth-token");
+    if ( authToken ) {
         fetch(
-            `/${getContext()}/auth?token=${authTokem}`,
+            `/${getContext()}/auth?token=${authToken}`,
             {    method: 'POST'    }
         )
             .then( r => r.json() )
@@ -231,7 +231,6 @@ function checkAuth() {
                             } )
                     }
                     serveCartButtons();
-
                 }
             } ) ;
     }

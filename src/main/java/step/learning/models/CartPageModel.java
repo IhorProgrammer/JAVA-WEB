@@ -7,17 +7,12 @@ import java.util.List;
 
 public class CartPageModel {
     private List<Product> products;
-    private List<CartItem> cartItems;
-    public CartPageModel(List<Product> products, List<CartItem> cartItems) {
+    public CartPageModel(List<Product> products) {
         this.products = products;
-        this.cartItems = cartItems;
     }
 
     public List<Product> getProducts() {
         return products;
     }
 
-    public List<CartItem> getCartItems() {
-        return cartItems;
-    }
 }

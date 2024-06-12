@@ -24,12 +24,50 @@ public class CartDao {
         this.dbService = dbService;
     }
 
-    public List<CartItem> getCarts(){
-        return Arrays.asList( new CartItem[] {
-            new CartItem(UUID.randomUUID(), UUID.randomUUID(), 1),
-            new CartItem(UUID.randomUUID(), UUID.randomUUID(), 2),
-            new CartItem(UUID.randomUUID(), UUID.randomUUID(), 3),
-        });
+
+    public String getCartIdByUser ( String userId ) {
+        // Шукаємо чи є у користувача відкритий кошик
+        String cartId = null;
+        try(Statement statement = dbService.getConnection().createStatement()) {
+            String sql = String.format("SELECT cart_id FROM carts WHERE cart_user='%s' AND cart_status=0 ",userId);
+            ResultSet res = statement.executeQuery(sql);
+            if( res.next() ) {  // є відкритий кошик
+                cartId = res.getString(1);
+            }
+        } catch ( SQLException ex ) {
+            System.err.print("Error CartDao:getCartIdByUser: ");
+            System.err.println(ex.getMessage());
+        } catch ( Exception ex ) {
+            System.err.print("Error CartDao:getCartIdByUser: ");
+            System.err.println(ex.getMessage());
+        }
+        return cartId;
+    }
+
+    public List<CartItem> getList(String cartId){
+        // Шукаємо чи є у користувача відкритий кошик
+        List<CartItem> cartItems = new ArrayList<>();
+        String sql;
+        try(Statement statement = dbService.getConnection().createStatement()) {
+            // отримати всю інфу
+            sql = String.format("" +
+                    "SELECT cd.cart_dt_id cart_id, cd.product_id, cart_dt_cnt count, product_image image, product_name " +
+                    "FROM carts_details cd " +
+                    "JOIN Products P on cd.product_id = P.product_id " +
+                    "WHERE cd.cart_id = '%s'", cartId);
+            ResultSet res = statement.executeQuery(sql);
+            while ( res.next() ) {
+                cartItems.add( CartItem.fromResultSet(res) );
+            }
+            return cartItems;
+        } catch ( SQLException ex ) {
+            System.err.print("Error CartDao:getCartsByUser: ");
+            System.err.println(ex.getMessage());
+        } catch ( Exception ex ) {
+            System.err.print("Error CartDao:getCartsByUser: ");
+            System.err.println(ex.getMessage());
+        }
+        return cartItems;
     }
 
     public void add(String userId, String productId, int cnt) {

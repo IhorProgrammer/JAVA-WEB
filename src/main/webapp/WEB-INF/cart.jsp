@@ -30,28 +30,29 @@
         <% } %>
         </div>
     </div>
-    <div class="col s4">
+    <div class="col s4" id="user_cart">
         <h1>Мій кошик</h1>
-        <% for (CartItem item : model.getCartItems()) { %>
-        <div class="col s12 m7">
-            <div class="card horizontal">
-                <div class="card-image">
-                    <img src="<%=context%>/img/no_image.png" alt="img">
-                </div>
-                <div class="card-stacked">
-                    <div class="card-content">
-                        <p><%=item.getId()%></p>
-                        <p><%=item.getProductId()%></p>
-                        <p><%=item.getCount()%></p>
-                    </div>
-                    <div class="card-action">
-                        <a href="#">Видалити з кошику</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <% } %>
+<%--        <% for (CartItem item : model.getCartItems()) { %>--%>
+<%--        <div class="col s12 m7">--%>
+<%--            <div class="card horizontal">--%>
+<%--                <div class="card-image">--%>
+<%--                    <img src="<%=context%>/img/no_image.png" alt="img">--%>
+<%--                </div>--%>
+<%--                <div class="card-stacked">--%>
+<%--                    <div class="card-content">--%>
+<%--                        <p><%=item.getId()%></p>--%>
+<%--                        <p><%=item.getProductId()%></p>--%>
+<%--                        <p><%=item.getCount()%></p>--%>
+<%--                    </div>--%>
+<%--                    <div class="card-action">--%>
+<%--                        <a href="#">Видалити з кошику</a>--%>
+<%--                    </div>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--        <% } %>--%>
     </div>
 </div>
 
 
+<script src="<%=context%>/js/cart.js"></script>
