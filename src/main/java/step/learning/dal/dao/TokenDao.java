@@ -45,12 +45,31 @@ public class TokenDao {
             prep.setString(2, token);
             prep.executeUpdate();
         } catch ( SQLException ex ) {
-            System.err.print("Error UserDao:getUserByEmail: ");
+            System.err.print("Error TokenDao:updateTokenExpires: ");
             System.err.println(ex.getMessage());
         } catch ( Exception ex ) {
-            System.err.print("Error UserDao:getUserByEmail: ");
+            System.err.print("Error TokenDao:updateTokenExpires: ");
             System.err.println(ex.getMessage());
         }
+    }
+
+    public boolean tokenIsValid( String token ) {
+        String sql = "SELECT * FROM Tokens WHERE token_id = ? AND token_expires > CURRENT_TIMESTAMP LIMIT 1";
+        try ( PreparedStatement prep = dbService.getConnection().prepareStatement( sql )) {
+            prep.setString(1, token);
+            ResultSet resultSet = prep.executeQuery();
+            if( resultSet.next() ) {
+                Token tokenRes = Token.fromResultSet( resultSet );
+                if( tokenRes != null ) return true;
+            }
+        } catch ( SQLException ex ) {
+            System.err.print("Error TokenDao:tokenIsValid: ");
+            System.err.println(ex.getMessage());
+        } catch ( Exception ex ) {
+            System.err.print("Error TokenDao:tokenIsValid: ");
+            System.err.println(ex.getMessage());
+        }
+        return false;
     }
 
     private String findTokenByUser( User user ) {
@@ -63,10 +82,10 @@ public class TokenDao {
                 if( token != null ) return token.getTokenId().toString();
             }
         } catch ( SQLException ex ) {
-            System.err.print("Error UserDao:getUserByEmail: ");
+            System.err.print("Error TokenDao:findTokenByUser: ");
             System.err.println(ex.getMessage());
         } catch ( Exception ex ) {
-            System.err.print("Error UserDao:getUserByEmail: ");
+            System.err.print("Error TokenDao:findTokenByUser: ");
             System.err.println(ex.getMessage());
         }
         return null;
@@ -83,10 +102,10 @@ public class TokenDao {
             prep.executeUpdate();
             return token;
         } catch ( SQLException ex ) {
-            System.err.print("Error UserDao:getUserByEmail: ");
+            System.err.print("Error TokenDao:generateToken: ");
             System.err.println(ex.getMessage());
         } catch ( Exception ex ) {
-            System.err.print("Error UserDao:getUserByEmail: ");
+            System.err.print("Error TokenDao:generateToken: ");
             System.err.println(ex.getMessage());
         }
         return null;

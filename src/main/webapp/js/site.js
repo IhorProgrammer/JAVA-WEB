@@ -1,4 +1,4 @@
-import ValidationClass from "./validation/ValidationClass.js";
+import ValidationClass from "./validation/ValidationUserClass.js";
 
 
 var modal;
@@ -7,8 +7,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
     // шукаємо кнопку реєстрації, якщо знаходимо - додаємо обробник
     const signupButton = document.getElementById("signup-button");
     if(signupButton) { signupButton.onclick = signupButtonClick; }
-    const addProductButton = document.getElementById("add-product-button");
-    if(addProductButton) { addProductButton.onclick = addProductButtonClick; }
+
     // шукаємо кнопку автентифікації, якщо знаходимо - додаємо обробник
     const authButton = document.getElementById("auth-button");
     if(authButton) { authButton.onclick = authButtonClick; }
@@ -29,6 +28,27 @@ document.addEventListener( 'DOMContentLoaded', () => {
 
     checkAuth();
 });
+
+
+
+function serveCartButtons() {
+    // шукаємо id користувача (з його аватарки)
+    const userId = document.querySelector('[data-user-id]').getAttribute('data-user-id');
+    // шукаємо всі кнопки "додати до кошику" за ознакою data-product="..."
+    for( let btn of document.querySelectorAll('[data-product]') ) {
+        btn.onclick = () => {
+            // вилучаємо id з атрибута
+            let productId = btn.getAttribute('data-product');
+            // при натисненні надсилаємо запит до API
+            fetch(`/${getContext()}/shop-api?user-id=${userId}&product-id=${productId}`, {
+                    method: 'PUT'}
+            )
+                .then(r => r.json())
+                .then(console.log);
+        }
+    }
+}
+
 
 
 function getContext() {
@@ -118,40 +138,40 @@ function signupButtonClick(e) {
 }
 
 
-function addProductButtonClick(e) {
-
-    // шукаємо форму - батьківській елемент кнопки (e.target)
-    const productForm = e.target.closest('form') ;
-    if( ! productForm ) {
-        throw "Product form not found" ;
-    }
-
-    // всередині форми signupForm знаходимо елементи
-    const nameInput = productForm.querySelector('input[name="product-name"]');
-    if( ! nameInput ) { throw "product-name not found" ; }
-    const photoInput = productForm.querySelector('input[name="product-photo"]');
-    if( ! photoInput ) { throw "product-photo not found" ; }
-
-    /// Валідація даних
-    let isFormValid = true ;
-    isFormValid = isFormValid ? validateInput(nameInput,nameInput.value != "") : false;
-    if( ! isFormValid ) return ;
-
-
-    // формуємо дані для передачі на бекенд
-    const formData = new FormData() ;
-    formData.append( "product-name", nameInput.value ) ;
-    if( photoInput.files.length > 0 ) {
-        formData.append( "product-photo", photoInput.files[0] ) ;
-    }
-
-    // передаємо - формуємо запит
-    fetch( window.location.href, { method: 'POST', body: formData } )
-        .then( r => r.json() )
-        .then( j => {
-            console.log(j);
-        } ) ;
-}
+// function addProductButtonClick(e) {
+//
+//     // шукаємо форму - батьківській елемент кнопки (e.target)
+//     const productForm = e.target.closest('form') ;
+//     if( ! productForm ) {
+//         throw "Product form not found" ;
+//     }
+//
+//     // всередині форми signupForm знаходимо елементи
+//     const nameInput = productForm.querySelector('input[name="product-name"]');
+//     if( ! nameInput ) { throw "product-name not found" ; }
+//     const photoInput = productForm.querySelector('input[name="product-photo"]');
+//     if( ! photoInput ) { throw "product-photo not found" ; }
+//
+//     /// Валідація даних
+//     let isFormValid = true ;
+//     isFormValid = isFormValid ? validateInput(nameInput,nameInput.value != "") : false;
+//     if( ! isFormValid ) return ;
+//
+//
+//     // формуємо дані для передачі на бекенд
+//     const formData = new FormData() ;
+//     formData.append( "product-name", nameInput.value ) ;
+//     if( photoInput.files.length > 0 ) {
+//         formData.append( "product-photo", photoInput.files[0] ) ;
+//     }
+//
+//     // передаємо - формуємо запит
+//     fetch( window.location.href, { method: 'POST', body: formData } )
+//         .then( r => r.json() )
+//         .then( j => {
+//             console.log(j);
+//         } ) ;
+// }
 
 
 function validateInput(input, isValidate) {
@@ -197,6 +217,22 @@ function checkAuth() {
             {    method: 'POST'    }
         )
             .then( r => r.json() )
-            .then( console.log ) ;
+            .then( j => {
+                if( j.meta.status == "success" ) {
+                    document.querySelector('[data-auth="avatar"]').innerHTML = `<img data-user-id="${j.data.id}" title="${j.data.name}" class="nav-avatar"  src="/${getContext()}/img/avatar/${j.data.avatar}" />`
+                    const product = document.querySelector('[data-auth="product"]');
+                    if( product ) {
+                        fetch( `/${getContext()}/product.jsp` )
+                            .then( r => r.text() )
+                            .then( t => {
+                                product.innerHTML = t
+                                document.getElementById( "add-product-button" )
+                                    .addEventListener("click", addProductClick)
+                            } )
+                    }
+                    serveCartButtons();
+
+                }
+            } ) ;
     }
 }

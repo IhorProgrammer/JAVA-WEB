@@ -24,15 +24,15 @@
                 <a href="<%=context%>/" class="brand-logo">Logo</a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
                     <li><a href="<%=context%>/cart"><i class="material-icons">shopping_cart</i></a></li>
-                    <li><a href="<%=context%>/add_product">Додати продукт</a></li>
+                    <li><a href="<%=context%>/shop">Додати продукт</a></li>
                     <li><a href="<%=context%>/promotional">Акційні пропозиції</a></li>
-                    <li><a href="#auth-modal" class="modal-trigger"><i class="material-icons">key</i></a></li>
+                    <li data-auth="avatar"><a href="#auth-modal" class="modal-trigger"><i class="material-icons">key</i></a></li>
                     <li><a href="<%=context%>/signup"><i class="material-icons">person_add</i></a></li>
                 </ul>
             </div>
         </nav>
     </header>
-    <main class="container">
+    <main class="<%=request.getAttribute("skip-container") == null ? "container" : ""%>">
         <jsp:include page="<%=bodyFile%>"/>
     </main>
     <footer class="page-footer deep-purple darken-1">
